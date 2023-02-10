@@ -4,7 +4,7 @@ import HomePage from '@/components/Home/home-page'
 
 
 export const getServerSideProps = async (context)=>{
-  const {events_categories} = await import('/data/data.json');
+  const {events_categories} = await import('tmp/data.json');
   
   return {
     props: {

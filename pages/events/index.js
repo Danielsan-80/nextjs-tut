@@ -4,7 +4,7 @@ import Meta from '@/components/Meta/meta'
 import styles from '@/styles/Events.module.sass'
 
 export const getStaticProps = async(context)=>{
-  const {events_categories} = await import('/data/data.json')
+  const {events_categories} = await import('tmp/data.json')
  
   return {
     props: {

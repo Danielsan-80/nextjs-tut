@@ -6,7 +6,7 @@ import { useRouter } from 'next/router'
 
 export const getStaticProps = async(context)=>{
   const id = context?.params.cat
-  const {allEvents} = await import('/data/data.json')
+  const {allEvents} = await import('tmp/data.json')
 
   const data = allEvents.filter(event=> event.city === id)
 
@@ -18,7 +18,7 @@ export const getStaticProps = async(context)=>{
 
 export const getStaticPaths = async(context)=>{
 
-  const {events_categories} = await import('/data/data.json')
+  const {events_categories} = await import('tmp/data.json')
   const paths = events_categories.map(event => {
     return {
       params: {
