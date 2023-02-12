@@ -3,7 +3,7 @@ import fs from 'fs'
 
 
 const buildPath = ()=>{
-    return path.join(process.cwd(), 'tmp','data.json')
+    return path.join(process.cwd(), '/tmp','data.json')
 }
 
 const extractData = (filePath)=> {
