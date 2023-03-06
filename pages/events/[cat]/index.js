@@ -5,9 +5,12 @@ import styles from '@/styles/CityEvents.module.sass'
 import { useRouter } from 'next/router'
 
 export const getStaticProps = async(context)=>{
+  let dev = process.env.NODE_ENV !== 'production'
+
+  let {DEV_URL, PROD_URL} = process.env
   const id = context?.params.cat
   
-  const res = await fetch('http://localhost:3000/api/all-events')
+  const res = await fetch(`${dev ? DEV_URL : PROD_URL}/api/all-events`)
   const events = await res.json()
 
   const data = events.filter(event => event.city.toLowerCase().replace(' ', '-') === id)
@@ -20,8 +23,12 @@ export const getStaticProps = async(context)=>{
 
 export const getStaticPaths = async(context)=>{
 
-  const res = await fetch('http://localhost:3000/api/events-categories')
+  let dev = process.env.NODE_ENV !== 'production'
+
+  let {DEV_URL, PROD_URL} = process.env
+  const res = await fetch(`${dev ? DEV_URL : PROD_URL}/api/events-categories`)
   const data = await res.json()
+  
 
   const paths = data.map(event => {
     return {
