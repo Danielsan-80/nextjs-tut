@@ -6,9 +6,11 @@ import { useRouter } from 'next/router'
 
 export const getStaticProps = async(context)=>{
   const id = context?.params.cat
-  const {allEvents} = await import('tmp/data.json')
+  
+  const res = await fetch('http://localhost:3000/api/all-events')
+  const events = await res.json()
 
-  const data = allEvents.filter(event=> event.city === id)
+  const data = events.filter(event => event.city.toLowerCase().replace(' ', '-') === id)
 
   return {
     props: {data, pageName: id }
@@ -18,8 +20,10 @@ export const getStaticProps = async(context)=>{
 
 export const getStaticPaths = async(context)=>{
 
-  const {events_categories} = await import('tmp/data.json')
-  const paths = events_categories.map(event => {
+  const res = await fetch('http://localhost:3000/api/events-categories')
+  const data = await res.json()
+
+  const paths = data.map(event => {
     return {
       params: {
         cat: event.id.toString()

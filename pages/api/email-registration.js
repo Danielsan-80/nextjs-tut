@@ -1,36 +1,13 @@
-import path from 'path'
-import fs from 'fs'
 
+import { allEvents } from "@/db/events"
 
-const buildPath = ()=>{
-    return path.join(process.cwd(), '/tmp','data.json')
-}
-
-const extractData = (filePath)=> {
-    const jsonData = fs.readFileSync(filePath)
-    return JSON.parse(jsonData)
-}
-
-
-export default function handler(req, res) {
+export default async function handler(req, res) {
     // req.method==='POST' ? 
     //     res.json({result: 'success'})
     //     :
     //     res.json({error: 'wrong'})
 
     const {method} = req
-
-
-    //access data.json
-    const filePath = buildPath()
-    //extract the data "AllEvents"
-    const {events_categories, allEvents} = extractData(filePath)
-
-    // res.status = 404 if no events are found
-    if(!allEvents) {
-        res.status(404).json({message: 'Events not found'})
-
-    }
 
     if (method ==='POST'){ 
     const {email, id} = req.body
@@ -39,39 +16,25 @@ export default function handler(req, res) {
     
     
     if(!email || !email.match(validEmail)){
+        
         return res.status(422).json({message: 'invalid email address'})
     }
 
-    const allEventsUpdated = allEvents.map(event=> {
+    //retrieve event from database and check if mail exists
 
-        //loop and identify the event id
-        if(event.id === id) {
+    const event = await allEvents.findOne({id: id})
+    const emailExists = event.emails_registered.includes(email)
 
-            //add the email of the user to array "email_registered", only if that email doesnt exist yet
-            if(event.emails_registered.includes(email)) {
-                
-                res.status(409).json({message: 'email already registered'})
-                return event
-            }
-
-            return {
-                ...event,
-                emails_registered: [...event.emails_registered, email]
-            }
-        }
-
-        return event
-
-        })
+    if(emailExists) {
+        return res.status(409).json({message: 'mail already registered'})
+    }
     
-    //update the data.json file
-    fs.writeFileSync(filePath, JSON.stringify({events_categories, allEvents: allEventsUpdated}))
+    //update the event
+    await allEvents.updateOne({id: id}, {
+        $push: {'emails_registered':email}
+    })
 
-    const event = id.replaceAll('-', ' ')
     
-    res.status(201).json({message: `Congratulations ! You've been registered with the email: ${email} for the event: ${event}`})}
-
-
-
+    res.status(201).json({message: `Congratulations ! You've been registered with the email: ${email} for the event: ${event.title}`})}
     
 }

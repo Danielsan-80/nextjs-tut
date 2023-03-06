@@ -3,8 +3,10 @@
 import HomePage from '@/components/Home/home-page'
 
 
+
 export const getServerSideProps = async (context)=>{
-  const {events_categories} = await import('tmp/data.json');
+  const data = await fetch('http://localhost:3000/api/events-categories')
+  const events_categories = await data.json()
   
   return {
     props: {

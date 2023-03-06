@@ -3,8 +3,10 @@ import Link from 'next/link'
 import Meta from '@/components/Meta/meta'
 import styles from '@/styles/Events.module.sass'
 
+
 export const getStaticProps = async(context)=>{
-  const {events_categories} = await import('tmp/data.json')
+  const data = await fetch('http://localhost:3000/api/events-categories')
+  const events_categories = await data.json()
  
   return {
     props: {

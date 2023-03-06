@@ -4,6 +4,7 @@ import styles from '@/styles/Home.module.sass'
 
 const HomePage = ({data}) => {
   return (
+    
     <div className={styles.home_body}>
 
         {data.map(event=>
@@ -21,7 +22,7 @@ const HomePage = ({data}) => {
         )}
 
       </div>
-
+ 
   )
 }
 
