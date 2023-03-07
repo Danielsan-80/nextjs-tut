@@ -47,6 +47,10 @@ export const getStaticPaths = async()=>{
 
 const Event = ({data}) => {
 
+  let dev = process.env.NODE_ENV !== 'production'
+
+    let {DEV_URL, PROD_URL} = process.env
+  
  
   
   // const handleSubmit = (e)=>{
@@ -62,9 +66,11 @@ const Event = ({data}) => {
     
     const email = inputEmail.current.value
     const {id}= router?.query
+    
 
     try {
-      const res = await fetch('/api/email-registration', {
+      
+      const res = await fetch(`/api/email-registration`, {
         method: 'POST',
         headers: {
           'Content-Type' : 'Application/json'
