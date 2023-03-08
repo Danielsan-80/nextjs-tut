@@ -2,23 +2,25 @@
 //import styles from '@/styles/Home.sass'
 import HomePage from '@/components/Home/home-page'
 
-
+import { eventsCategories } from "@/db/events";
 
 export const getServerSideProps = async (context)=>{
 
-  let dev = process.env.NODE_ENV !== 'production'
+  try {
+    const events_categories = await eventsCategories.find({}).toArray()
 
-  let {DEV_URL, PROD_URL} = process.env
-
-  const data = await fetch(`${dev ? DEV_URL : PROD_URL}/api/events-categories`)
-  const events_categories = await data.json()
-  
-  
-  return {
-    props: {
-      data: events_categories,
+    return {
+      props: {
+        data: JSON.parse(JSON.stringify(events_categories)),
+      }
     }
+
+  } catch (error) {
+    console.log(error)
   }
+  
+  
+  
 }
 
 export default function Home({data}) {

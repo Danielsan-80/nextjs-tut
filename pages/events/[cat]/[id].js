@@ -2,31 +2,35 @@ import Image from 'next/image'
 import styles from '@/styles/Event.module.sass'
 import {useRef, useState} from 'react'
 import { useRouter } from 'next/router'
+import { allEvents } from '@/db/events'
 
 export const getStaticProps = async(context)=>{
 
-  let dev = process.env.NODE_ENV !== 'production'
-
-  let {DEV_URL, PROD_URL} = process.env
   const {id} = context?.params
-  const res = await fetch(`${dev ? DEV_URL : PROD_URL}/api/all-events`)
-  const allEvents = await res.json()
-  const data = allEvents.find(event => event.id === id)
+
+  try {
+    const event = await allEvents.findOne({id: id})
+
+    const data = await JSON.parse(JSON.stringify(event))
 
   return {
     props: {data}
   }
+  } catch (error) {
+    console.log(error)
+  }
+
+  
 }
 
 export const getStaticPaths = async()=>{
   
-  let dev = process.env.NODE_ENV !== 'production'
+ try {
 
-  let {DEV_URL, PROD_URL} = process.env
-  const res = await fetch(`${dev ? DEV_URL : PROD_URL}/api/all-events`)
-  const allEvents = await res.json()
+  const all_events = await allEvents.find({}).toArray()
+  //const all_events = await JSON.parse(JSON.stringify(res))
 
-  const paths = allEvents.map(event=> 
+  const paths = all_events.map(event=> 
     {return {
       params: {
         cat: event.city.toString(),
@@ -40,18 +44,20 @@ export const getStaticPaths = async()=>{
     paths,
     fallback: false
   }
+
+
+ } catch (error) {
+    console.log(error)
+ }
+  
+
+  
 }
 
 
 
 
 const Event = ({data}) => {
-
-  let dev = process.env.NODE_ENV !== 'production'
-
-    let {DEV_URL, PROD_URL} = process.env
-  
- 
   
   // const handleSubmit = (e)=>{
   //   e.preventDefault()

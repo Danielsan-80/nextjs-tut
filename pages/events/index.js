@@ -2,22 +2,26 @@ import Image from 'next/image'
 import Link from 'next/link'
 import Meta from '@/components/Meta/meta'
 import styles from '@/styles/Events.module.sass'
+import { eventsCategories } from '@/db/events'
 
 
 export const getStaticProps = async(context)=>{
 
-  let dev = process.env.NODE_ENV !== 'production'
+  try {
 
-  let {DEV_URL, PROD_URL} = process.env
+    const events_categories = await eventsCategories.find({}).toArray()
 
-  const data = await fetch(`${dev ? DEV_URL : PROD_URL}/api/events-categories`)
-  const events_categories = await data.json()
- 
-  return {
-    props: {
-      data: events_categories
+    return {
+      props: {
+        data: JSON.parse(JSON.stringify(events_categories))
+      }
     }
+    
+  } catch (error) {
+    
   }
+ 
+  
 }
 
 const Events = ({data}) => {

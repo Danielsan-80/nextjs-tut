@@ -3,17 +3,18 @@ import Link from 'next/link'
 import Meta from '@/components/Meta/meta'
 import styles from '@/styles/CityEvents.module.sass'
 import { useRouter } from 'next/router'
+import { eventsCategories, allEvents } from '@/db/events'
 
 export const getStaticProps = async(context)=>{
-  let dev = process.env.NODE_ENV !== 'production'
-
-  let {DEV_URL, PROD_URL} = process.env
-  const id = context?.params.cat
   
-  const res = await fetch(`${dev ? DEV_URL : PROD_URL}/api/all-events`)
-  const events = await res.json()
+  const id = context?.params.cat
+  const splitStr = id.split('-')
+  const capStr = splitStr.map(str => str.charAt(0).toUpperCase() + str.slice(1))
+  const cityId = capStr.join().replace(',' ,' ')
+  
+  const cityEvents = await allEvents.find({city: cityId}).toArray()
 
-  const data = events.filter(event => event.city.toLowerCase().replace(' ', '-') === id)
+  const data = await JSON.parse(JSON.stringify(cityEvents))
 
   return {
     props: {data, pageName: id }
@@ -23,14 +24,10 @@ export const getStaticProps = async(context)=>{
 
 export const getStaticPaths = async(context)=>{
 
-  let dev = process.env.NODE_ENV !== 'production'
-
-  let {DEV_URL, PROD_URL} = process.env
-  const res = await fetch(`${dev ? DEV_URL : PROD_URL}/api/events-categories`)
-  const data = await res.json()
+  try {
+    const events_categories = await eventsCategories.find({}).toArray()
   
-
-  const paths = data.map(event => {
+  const paths = events_categories.map(event => {
     return {
       params: {
         cat: event.id.toString()
@@ -42,6 +39,11 @@ export const getStaticPaths = async(context)=>{
     paths,
     fallback: false
   }
+    
+  } catch (error) {
+    console.log(error)
+  }
+  
 
 }
 
